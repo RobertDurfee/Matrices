@@ -31,7 +31,7 @@ private:
 	T ** values;
 
 	int GetIndexOfLabel(char * label);
-	void Reallocate(int size);
+	void Allocate(int size);
 
 	void Zero();
 };
@@ -92,7 +92,7 @@ Matrix<T>::~Matrix()
 template<typename T>
 void Matrix<T>::Assign(int size, char ** labels)
 {
-	Reallocate(size);
+	Allocate(size);
 
 	for (int i = 0; i < size; i++)
 	{
@@ -143,7 +143,7 @@ int Matrix<T>::GetIndexOfLabel(char * label)
 }
 
 template<typename T>
-void Matrix<T>::Reallocate(int size)
+void Matrix<T>::Allocate(int size)
 {
 	if (this->size != 0)
 		this->~Matrix();
