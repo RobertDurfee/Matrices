@@ -1,200 +1,141 @@
 #ifndef MATRICES_HEADER
 #define MATRICES_HEADER
 
-#include <vector>
-#include <iostream>
-#include <iomanip>
-#include <string>
+#define _CRT_SECURE_NO_WARNINGS
 
-using namespace std;
+#include <stdlib.h>
+#include <string.h>
 
-template<typename T>
-class Matrix1D
-{
-public:
-	Matrix1D() = default;
-	Matrix1D(int x, vector<string> xNames)
-	{
-		Assign(x, xNames);
-	}
-	void Assign(int x, vector<string> xNames)
-	{
-		if (x != (int)xNames.size())
-			throw new exception("Dimensions Do Not Match");
-		this->x = x;
-		for (int i = 0; i < this->x; i++)
-			this->values.push_back(INFINITY);
-		this->xNames = xNames;
-	}
-	void Print()
-	{
-		vector<int> columnWidths;
-
-		for (int i = 0; i < this->x; i++)
-			if (this->xNames[i].length() > 5)
-				columnWidths.push_back(this->xNames[i].length());
-			else
-				columnWidths.push_back(5);
-
-		for (int i = 0; i < this->x; i++)
-			cout << right << setw(columnWidths[i]) << this->xNames[i] << " ";
-		cout << endl;
-
-		for (int i = 0; i < this->x; i++)
-			cout << right << setw(columnWidths[i]) << setprecision(3) << fixed << this->operator[](i) << " ";
-		cout << endl << endl;
-	}
-	T& operator[](string xName)
-	{
-		int index;
-		if ((index = GetIndexOfName(xName)) != -1)
-			return this->values[index];
-		else
-			throw new exception("Value Name Not Found");
-	}
-	T& operator[](int xIndex)
-	{
-		if (xIndex < this->x)
-			return this->values[xIndex];
-		else
-			throw new exception("Index Is Outside The Bounds of the Array");
-	}
-
-	int x;
-	vector<string> xNames;
-	vector<T> values;
-	int GetIndexOfName(string xName)
-	{
-		for (int i = 0; i < (int)this->xNames.size(); i++)
-			if (this->xNames[i] == xName)
-				return i;
-		return -1;
-	}
-};
 
 template<typename T>
-class Matrix2D
+class Matrix
 {
 public:
-	Matrix2D() = default;
-	Matrix2D(int y, int x, vector<string> yNames, vector<string> xNames)
-	{
-		Assign(y, x, yNames, xNames);
-	}
-	void Assign(int y, int x, vector<string> yNames, vector<string> xNames)
-	{
-		this->x = x; this->y = y;
-		this->yNames = yNames;
+	Matrix() = default;
+	Matrix(int size, char ** labels);
+	Matrix(int size, T * values, char ** labels);
+	Matrix(int size, T & value, char ** labels);
 
-		for (int i = 0; i < this->y; i++)
-			this->values.push_back(Matrix1D<T>(this->x, xNames));
-	}
-	void Print()
-	{
-		vector<int> columnWidths;
-		for (int i = 0; i < this->x; i++)
-			if (this->operator[](0).xNames[i].length() > 5)
-				columnWidths.push_back(this->operator[](0).xNames[i].length());
-			else
-				columnWidths.push_back(5);
+	void Assign(int size, char ** labels);
+	void Assign(int size, T * values, char ** labels);
+	void Assign(int size, T & value, char ** labels);
+	
+	T& operator[](char * label);
+	T& operator[](int index);
+	
+private:
+	int size;
+	char ** labels;
+	T ** values;
 
-		int rowLabelColumnWidth = 0;
-		for (int i = 0; i < this->y; i++)
-			if ((int)this->yNames[i].length() > rowLabelColumnWidth)
-				rowLabelColumnWidth = this->yNames[i].length();
-
-		cout << setw(rowLabelColumnWidth + 1) << " ";
-		for (int i = 0; i < this->x; i++)
-			cout << right << setw(columnWidths[i]) << this->operator[](0).xNames[i] << " ";
-		cout << endl;
-
-		for (int i = 0; i < this->y; i++)
-		{
-			cout << left << setw(rowLabelColumnWidth) << this->yNames[i] << " ";
-
-			for (int j = 0; j < this->x; j++)
-				cout << right << setw(columnWidths[j]) << setprecision(3) << fixed << this->operator[](i)[j] << " ";
-
-			cout << endl;
-		}
-		cout << endl;
-	}
-	Matrix1D<T>& operator[](string yName)
-	{
-		int index;
-		if ((index = GetIndexOfName(yName)) != -1)
-			return this->values[index];
-		else
-			throw new exception("Value Name Not Found");
-	}
-	Matrix1D<T>& operator[](int yIndex)
-	{
-		if (yIndex < this->y)
-			return this->values[yIndex];
-		else
-			throw new exception("Index Is Outside The Bounds of the Array");
-	}
-
-	int x, y;
-	vector<string> yNames;
-	vector<Matrix1D<T>> values;
-	int GetIndexOfName(string yName)
-	{
-		for (int i = 0; i < (int)this->yNames.size(); i++)
-			if (this->yNames[i] == yName)
-				return i;
-		return -1;
-	}
+	int GetIndexOfLabel(char * label);
+	void Reallocate(int size);
 };
+
+typedef Matrix<double>   Matrix1D;
+typedef Matrix<Matrix1D> Matrix2D;
+typedef Matrix<Matrix2D> Matrix3D;
+
+#define MATRIX1D(X, X_LABELS) (Matrix1D(X, X_LABELS))
+#define MATRIX2D(X, Y, X_LABELS, Y_LABELS) (Matrix2D(X, MATRIX1D(Y, Y_LABELS), X_LABELS))
+#define MATRIX3D(X, Y, Z, X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X, MATRIX2D(Y, Z, Y_LABELS, Z_LABELS), X_LABELS))
 
 template<typename T>
-class Matrix3D
+Matrix<T>::Matrix(int size, char ** labels)
 {
-public:
-	Matrix3D() = default;
-	Matrix3D(int z, int y, int x, vector<string> zNames, vector<string> yNames, vector<string> xNames)
-	{
-		Assign(z, y, x, zNames, yNames, xNames);
-	}
-	void Assign(int z, int y, int x, vector<string> zNames, vector<string> yNames, vector<string> xNames)
-	{
-		this->x = x; this->y = y; this->z = z;
-		this->zNames = zNames;
+	this->size = 0;
+	Assign(size, labels);
+}
+template<typename T>
+Matrix<T>::Matrix(int size, T * values, char ** labels)
+{
+	this->size = 0;
+	Assign(size, values, labels);
+}
+template<typename T>
+Matrix<T>::Matrix(int size, T & value, char ** labels)
+{
+	this->size = 0;
+	Assign(size, value, labels);
+}
 
-		for (int i = 0; i < this->z; i++)
-			this->values.push_back(Matrix2D<T>(this->y, this->x, yNames, xNames));
-	}
-	//Not Yet Implemented
-	void Print()
-	{
+template<typename T>
+void Matrix<T>::Assign(int size, char ** labels)
+{
+	Reallocate(size);
 
-	}
-	Matrix2D<T>& operator[](string zName)
+	for (int i = 0; i < size; i++)
 	{
-		int index;
-		if ((index = GetIndexOfName(zName)) != -1)
-			return this->values[index];
-		else
-			throw new exception("Value Name Not Found");
+		this->labels[i] = (char *)malloc(strlen(labels[i]) + 1);
+		strcpy(this->labels[i], labels[i]);
+		this->values[i] = (T*)malloc(sizeof(T));
 	}
-	Matrix2D<T>& operator[](int zIndex)
-	{
-		if (zIndex < this->z)
-			return this->values[zIndex];
-		else
-			throw new exception("Index Is Outside The Bounds of the Array");
-	}
+}
+template<typename T>
+void Matrix<T>::Assign(int size, T * values, char ** labels)
+{
+	Assign(size, labels);
 
-	int x, y, z;
-	vector<string> zNames;
-	vector<Matrix2D<T>> values;
-	int GetIndexOfName(string zName)
+	for (int i = 0; i < size; i++)
+		memcpy(this->values[i], &values[i], sizeof(T));
+}
+template<typename T>
+void Matrix<T>::Assign(int size, T & value, char ** labels)
+{
+	Assign(size, labels);
+
+	for (int i = 0; i < size; i++)
+		memcpy(this->values[i], &value, sizeof(T));
+}
+
+template<typename T>
+T& Matrix<T>::operator[] (char * label)
+{
+	return operator[](GetIndexOfLabel(label));
+}
+template<typename T>
+T& Matrix<T>::operator[] (int index)
+{
+	if (index >= 0 && index < size)
+		return *values[index];
+	else
+		throw;
+}
+
+template<typename T>
+int Matrix<T>::GetIndexOfLabel(char * label)
+{
+	for (int i = 0; i < size; i++)
+		if (!strcmp(this->labels[i], label))
+			return i;
+
+	return -1;
+}
+
+template<typename T>
+void Matrix<T>::Reallocate(int size)
+{
+	if (this->size != 0)
 	{
-		for (int i = 0; i < (int)this->zNames.size(); i++)
-			if (this->zNames[i] == zName)
-				return i;
-		return -1;
+		for (int i = 0; i < this->size; i++)
+			if (values[i])
+				free(values);
+
+		realloc(values, size * sizeof(T*));
+
+		for (int i = 0; i < this->size; i++)
+			if (labels[i])
+				free(labels[i]);
+
+		realloc(labels, size * sizeof(char *));
 	}
-};
+	else
+	{
+		values = (T**)malloc(size * sizeof(T*));
+		labels = (char **)malloc(size * sizeof(char *));
+	}
+	
+	this->size = size;
+}
 
 #endif
