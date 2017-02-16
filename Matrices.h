@@ -11,10 +11,12 @@ template<typename T>
 class Matrix
 {
 public:
-	Matrix() = default;
+	Matrix();
 	Matrix(int size, char ** labels);
 	Matrix(int size, T * values, char ** labels);
 	Matrix(int size, T & value, char ** labels);
+
+	~Matrix();
 
 	void Assign(int size, char ** labels);
 	void Assign(int size, T * values, char ** labels);
@@ -30,6 +32,8 @@ private:
 
 	int GetIndexOfLabel(char * label);
 	void Reallocate(int size);
+
+	void Zero();
 };
 
 typedef Matrix<double>   Matrix1D;
@@ -41,22 +45,48 @@ typedef Matrix<Matrix2D> Matrix3D;
 #define MATRIX3D(X, Y, Z, X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X, MATRIX2D(Y, Z, Y_LABELS, Z_LABELS), X_LABELS))
 
 template<typename T>
+Matrix<T>::Matrix()
+{
+	Zero();
+}
+template<typename T>
 Matrix<T>::Matrix(int size, char ** labels)
 {
-	this->size = 0;
+	Zero();
 	Assign(size, labels);
 }
 template<typename T>
 Matrix<T>::Matrix(int size, T * values, char ** labels)
 {
-	this->size = 0;
+	Zero();
 	Assign(size, values, labels);
 }
 template<typename T>
 Matrix<T>::Matrix(int size, T & value, char ** labels)
 {
-	this->size = 0;
+	Zero();
 	Assign(size, value, labels);
+}
+
+template<typename T>
+Matrix<T>::~Matrix()
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (values[i])
+			free(values[i]);
+
+		if (labels[i])
+			free(labels[i]);
+	}
+
+	if (values)
+		free(values);
+
+	if (labels)
+		free(labels);
+
+	Zero();
 }
 
 template<typename T>
@@ -116,26 +146,22 @@ template<typename T>
 void Matrix<T>::Reallocate(int size)
 {
 	if (this->size != 0)
-	{
-		for (int i = 0; i < this->size; i++)
-			if (values[i])
-				free(values);
+		this->~Matrix();
 
-		realloc(values, size * sizeof(T*));
-
-		for (int i = 0; i < this->size; i++)
-			if (labels[i])
-				free(labels[i]);
-
-		realloc(labels, size * sizeof(char *));
-	}
-	else
-	{
-		values = (T**)malloc(size * sizeof(T*));
-		labels = (char **)malloc(size * sizeof(char *));
-	}
+	values = (T**)malloc(size * sizeof(T*));
+	memset(values, 0, size * sizeof(T*));
+	labels = (char **)malloc(size * sizeof(char *));
+	memset(labels, 0, size * sizeof(char *));
 	
 	this->size = size;
+}
+
+template<typename T>
+void Matrix<T>::Zero()
+{
+	size = 0;
+	values = NULL;
+	labels = NULL;
 }
 
 #endif
