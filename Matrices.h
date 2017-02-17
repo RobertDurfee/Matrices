@@ -24,6 +24,7 @@ public:
 	
 	T& operator[](char * label);
 	T& operator[](int index);
+	Matrix<T>& operator=(const Matrix<T>& matrix);
 	
 private:
 	int size;
@@ -99,6 +100,7 @@ void Matrix<T>::Assign(int size, char ** labels)
 		this->labels[i] = (char *)malloc(strlen(labels[i]) + 1);
 		strcpy(this->labels[i], labels[i]);
 		this->values[i] = (T*)malloc(sizeof(T));
+		memset(this->values[i], 0, sizeof(T));
 	}
 }
 template<typename T>
@@ -107,7 +109,7 @@ void Matrix<T>::Assign(int size, T * values, char ** labels)
 	Assign(size, labels);
 
 	for (int i = 0; i < size; i++)
-		memcpy(this->values[i], &values[i], sizeof(T));
+		*this->values[i] = *values[i];
 }
 template<typename T>
 void Matrix<T>::Assign(int size, T & value, char ** labels)
@@ -115,7 +117,7 @@ void Matrix<T>::Assign(int size, T & value, char ** labels)
 	Assign(size, labels);
 
 	for (int i = 0; i < size; i++)
-		memcpy(this->values[i], &value, sizeof(T));
+		*this->values[i] = value;
 }
 
 template<typename T>
@@ -130,6 +132,27 @@ T& Matrix<T>::operator[] (int index)
 		return *values[index];
 	else
 		throw;
+}
+template<typename T>
+Matrix<T>& Matrix<T>::operator=(const Matrix<T>& matrix)
+{
+	size = matrix.size;
+
+	labels = (char **)realloc(labels, size * sizeof(char *));
+	values = (T**)realloc(values, size * sizeof(T*));
+
+	for (int i = 0; i < size; i++)
+	{
+		labels[i] = (char *)malloc(strlen(matrix.labels[i]) + 1);
+		strcpy(labels[i], matrix.labels[i]);
+
+		values[i] = (T*)malloc(sizeof(T));
+		memset(values[i], 0, sizeof(T));
+
+		*values[i] = *matrix.values[i];
+	}
+
+	return *this;
 }
 
 template<typename T>
