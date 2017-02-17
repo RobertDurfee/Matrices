@@ -1,8 +1,6 @@
 #ifndef MATRICES_HEADER
 #define MATRICES_HEADER
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <string.h> //strcpy(), strlen()
 #include <vector>   //vector
 #include <string>   //string
