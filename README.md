@@ -9,14 +9,14 @@ This is not production-worthy code! View this simply as a proof-of-concept.
 ```C++
 Matrix();
 
-Matrix(int size, vector<string> labels);
+Matrix(vector<string> labels);
 Matrix(int size, char ** labels);
 
-Matrix(int size, vector<T> values, vector<string> labels);
-Matrix(int size, T * values, char ** labels);
+Matrix(vector<string> labels, vector<T> values);
+Matrix(int size, char ** labels, T * values);
 
-Matrix(int size, T value, vector<string> labels);
-Matrix(int size, T value, char ** labels);
+Matrix(vector<string> labels, T value);
+Matrix(int size, char ** labels, T value);
 ```
 A `Matrix` can be initialized several different ways:
 
@@ -29,14 +29,14 @@ Two headers are provided utilizing a vector of strings or a pointer to a pointer
 
 ### Assigning
 ```C++
-void Assign(int size, vector<string> labels);
+void Assign(vector<string> labels);
 void Assign(int size, char ** labels);
   
-void Assign(int size, vector<T> values, vector<string> labels);
-void Assign(int size, T * values, char ** labels);
+void Assign(vector<string> labels, vector<T> values);
+void Assign(int size, char ** labels, T * values);
   
-void Assign(int size, T value, vector<string> labels);
-void Assign(int size, T value, char ** labels);
+void Assign(vector<string> labels, T value);
+void Assign(int size, char ** labels, T value);
 ```
 `Assign` methods provide the same functions as the constructors to allow alteration of the `Matrix` without declaring a new instance. Each time an `Assign` method is called, all the data in a `Matrix` will be deleted and new space will be allocated.
 
@@ -75,9 +75,13 @@ For convenience, three typedefs are provided. Since the `Matrix` class is generi
 
 ### Macros
 ```C++
+#define MATRIX1D(X_LABELS) (Matrix1D(X_LABELS))
+#define MATRIX2D(X_LABELS, Y_LABELS) (Matrix2D(X_LABELS, MATRIX1D(Y_LABELS)))
+#define MATRIX3D(X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X_LABELS, MATRIX2D(Y_LABELS, Z_LABELS)))
+
 #define MATRIX1D(X, X_LABELS) (Matrix1D(X, X_LABELS))
-#define MATRIX2D(X, Y, X_LABELS, Y_LABELS) (Matrix2D(X, MATRIX1D(Y, Y_LABELS), X_LABELS))
-#define MATRIX3D(X, Y, Z, X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X, MATRIX2D(Y, Z, Y_LABELS, Z_LABELS), X_LABELS))
+#define MATRIX2D(X, Y, X_LABELS, Y_LABELS) (Matrix2D(X, X_LABELS, MATRIX1D(Y, Y_LABELS)))
+#define MATRIX3D(X, Y, Z, X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X, X_LABELS, MATRIX2D(Y, Z, Y_LABELS, Z_LABELS)))
 ```
 For additional convenience, three macros are provided. Since the `Matrix` class is generic, the class can become recursive. As a result, a 3-dimensional `Matrix` can be defined by typing `Matrix<Matrix<Matrix<double>>>(x, Matrix<Matrix<double>>(y, Matrix<double>(z, zLabels), yLabels), xLabels)`. This is incredibly ugly, confusing, and very annoying to type each time, therefore these macros are provided to simplify definitions.
 
@@ -92,7 +96,7 @@ For additional convenience, three macros are provided. Since the `Matrix` class 
 int main()
 {
 	vector<string> shirts = { "T-Shirt", "Sweater", "Sweatshirt", "Coat", "Hoodie" };
-	Matrix1D shirtsPreferences = MATRIX1D(TYPES_OF_SHIRTS, shirts);
+	Matrix1D shirtsPreferences = MATRIX1D(shirts);
 
 	shirtsPreferences["T-Shirt"] = 0.1;
 	shirtsPreferences["Sweater"] = 0.3;
@@ -101,7 +105,7 @@ int main()
 	shirtsPreferences["Hoodie"] = 0.1;
 
 	vector<string> pants = { "Khakis", "Joggers", "Sweatpants", "Jeans" };
-	Matrix<Matrix<double>> shirtsPantsPreferences = Matrix<Matrix<double>>(TYPES_OF_SHIRTS, Matrix<double>(TYPES_OF_PANTS, pants), shirts);
+	Matrix<Matrix<double>> shirtsPantsPreferences = Matrix<Matrix<double>>(shirts, Matrix<double>(pants));
 
 	shirtsPantsPreferences["T-Shirt"]["Khakis"] = 0.1;
 	shirtsPantsPreferences["T-Shirt"]["Joggers"] = 0.1;
@@ -109,7 +113,7 @@ int main()
 	shirtsPantsPreferences["T-Shirt"]["Jeans"] = 0.3;
 
 	vector<string> socks = { "Plain", "Striped", "Argyle" };
-	Matrix3D shirtsPantsSocksPreferences = MATRIX3D(TYPES_OF_SHIRTS, TYPES_OF_PANTS, TYPES_OF_SOCKS, shirts, pants, socks);
+	Matrix3D shirtsPantsSocksPreferences = MATRIX3D(shirts, pants, socks);
 
 	shirtsPantsSocksPreferences["T-Shirt"]["Khakis"]["Plain"] = 0.2;
 	shirtsPantsSocksPreferences["T-Shirt"]["Khakis"]["Striped"] = 0.4;
