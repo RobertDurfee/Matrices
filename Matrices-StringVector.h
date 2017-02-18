@@ -12,12 +12,12 @@ class Matrix
 public:
 	Matrix();
 	Matrix(vector<string> labels);
-	Matrix(vector<T> values, vector<string> labels);
-	Matrix(T value, vector<string> labels);
+	Matrix(vector<string> labels, vector<T> values);
+	Matrix(vector<string> labels, T value);
 	
 	void Assign(vector<string> labels);
-	void Assign(vector<T> values, vector<string> labels);
-	void Assign(T value, vector<string> labels);
+	void Assign(vector<string> labels, vector<T> values);
+	void Assign(vector<string> labels, T value);
 	
 	T& operator[](string label);
 	T& operator[](int index);
@@ -35,9 +35,9 @@ typedef Matrix<double>   Matrix1D;
 typedef Matrix<Matrix1D> Matrix2D;
 typedef Matrix<Matrix2D> Matrix3D;
 
-#define MATRIX1D(X, X_LABELS) (Matrix1D(X, X_LABELS))
-#define MATRIX2D(X, Y, X_LABELS, Y_LABELS) (Matrix2D(X, MATRIX1D(Y, Y_LABELS), X_LABELS))
-#define MATRIX3D(X, Y, Z, X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X, MATRIX2D(Y, Z, Y_LABELS, Z_LABELS), X_LABELS))
+#define MATRIX1D(X_LABELS) (Matrix1D(X_LABELS))
+#define MATRIX2D(X_LABELS, Y_LABELS) (Matrix2D(X_LABELS, MATRIX1D(Y_LABELS)))
+#define MATRIX3D(X_LABELS, Y_LABELS, Z_LABELS) (Matrix3D(X_LABELS, MATRIX2D(Y_LABELS, Z_LABELS)))
 
 template<typename T>
 Matrix<T>::Matrix()
@@ -50,14 +50,14 @@ Matrix<T>::Matrix(vector<string> labels)
 	Assign(labels);
 }
 template<typename T>
-Matrix<T>::Matrix(vector<T> values, vector<string> labels)
+Matrix<T>::Matrix(vector<string> labels, vector<T> values)
 {
-	Assign(values, labels);
+	Assign(labels, values);
 }
 template<typename T>
-Matrix<T>::Matrix(T value, vector<string> labels)
+Matrix<T>::Matrix(vector<string> labels, T value)
 {
-	Assign(value, labels);
+	Assign(labels, value);
 }
 
 template<typename T>
@@ -69,7 +69,7 @@ void Matrix<T>::Assign(vector<string> labels)
 		this->labels[i] = labels[i];
 }
 template<typename T>
-void Matrix<T>::Assign(vector<T> values, vector<string> labels)
+void Matrix<T>::Assign(vector<string> labels, vector<T> values)
 {
 	Assign(labels);
 
@@ -77,7 +77,7 @@ void Matrix<T>::Assign(vector<T> values, vector<string> labels)
 		this->values[i] = values[i];
 }
 template<typename T>
-void Matrix<T>::Assign(T value, vector<string> labels)
+void Matrix<T>::Assign(vector<string> labels, T value)
 {
 	Assign(labels);
 
