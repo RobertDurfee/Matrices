@@ -82,3 +82,58 @@ For convenience, three typedefs are provided. Since the `Matrix` class is generi
 For additional convenience, three macros are provided. Since the `Matrix` class is generic, the class can become recursive. As a result, a 3-dimensional `Matrix` can be defined by typing `Matrix<Matrix<Matrix<double>>>(x, Matrix<Matrix<double>>(y, Matrix<double>(z, zLabels), yLabels), xLabels)`. This is incredibly ugly, confusing, and very annoying to type each time, therefore these macros are provided to simplify definitions.
 
 ### Example
+```
+#include "Matrices-StringVector.h"
+
+#define TYPES_OF_SHIRTS 5
+#define TYPES_OF_PANTS  4
+#define TYPES_OF_SOCKS  3
+
+int main()
+{
+	vector<string> shirts = { "T-Shirt", "Sweater", "Sweatshirt", "Coat", "Hoodie" };
+	Matrix1D shirtsPreferences = MATRIX1D(TYPES_OF_SHIRTS, shirts);
+
+	shirtsPreferences["T-Shirt"] = 0.1;
+	shirtsPreferences["Sweater"] = 0.3;
+	shirtsPreferences["Sweatshirt"] = 0.3;
+	shirtsPreferences["Coat"] = 0.2;
+	shirtsPreferences["Hoodie"] = 0.1;
+
+	vector<string> pants = { "Khakis", "Joggers", "Sweatpants", "Jeans" };
+	Matrix<Matrix<double>> shirtsPantsPreferences = Matrix<Matrix<double>>(TYPES_OF_SHIRTS, Matrix<double>(TYPES_OF_PANTS, pants), shirts);
+
+	shirtsPantsPreferences["T-Shirt"]["Khakis"] = 0.1;
+	shirtsPantsPreferences["T-Shirt"]["Joggers"] = 0.1;
+	shirtsPantsPreferences["T-Shirt"]["Sweatpants"] = 0.5;
+	shirtsPantsPreferences["T-Shirt"]["Jeans"] = 0.3;
+
+	vector<string> socks = { "Plain", "Striped", "Argyle" };
+	Matrix3D shirtsPantsSocksPreferences = MATRIX3D(TYPES_OF_SHIRTS, TYPES_OF_PANTS, TYPES_OF_SOCKS, shirts, pants, socks);
+
+	shirtsPantsSocksPreferences["T-Shirt"]["Khakis"]["Plain"] = 0.2;
+	shirtsPantsSocksPreferences["T-Shirt"]["Khakis"]["Striped"] = 0.4;
+	shirtsPantsSocksPreferences["T-Shirt"]["Khakis"]["Argyle"] = 0.4;
+
+	shirtsPantsSocksPreferences["T-Shirt"]["Joggers"]["Plain"] = 0.1;
+	shirtsPantsSocksPreferences["T-Shirt"]["Joggers"]["Striped"] = 0.2;
+	shirtsPantsSocksPreferences["T-Shirt"]["Joggers"]["Argyle"] = 0.7;
+
+	shirtsPantsSocksPreferences["T-Shirt"]["Sweatpants"]["Plain"] = 1.0;
+	shirtsPantsSocksPreferences["T-Shirt"]["Sweatpants"]["Striped"] = 0.0;
+	shirtsPantsSocksPreferences["T-Shirt"]["Sweatpants"]["Argyle"] = 0.0;
+
+	shirtsPantsSocksPreferences["T-Shirt"]["Jeans"]["Plain"] = 0.9;
+	shirtsPantsSocksPreferences["T-Shirt"]["Jeans"]["Striped"] = 0.0;
+	shirtsPantsSocksPreferences["T-Shirt"]["Jeans"]["Argyle"] = 0.1;
+
+	Matrix3D copy = shirtsPantsSocksPreferences;
+
+	copy["T-Shirt"]["Khakis"]["Plain"] = 0.1;
+	copy["T-Shirt"]["Khakis"]["Striped"] = 0.4;
+	copy["T-Shirt"]["Khakis"]["Argyle"] = 0.5;
+
+	return 0;
+}
+```
+Produces a 1-dimensional `Matrix` to rank types of shirts, a 2-dimensional `Matrix` to rank shirts-pants combinations, and a 3-dimensional `Matrix` to rank shirts-pants-socks combinations. Then copies the shirt-pants-socks combination `Matrix` and changes a few preferences. The 2-dimensional `Matrix` is declared conventionally without the macro.
