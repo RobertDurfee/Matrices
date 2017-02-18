@@ -11,20 +11,19 @@ class Matrix
 {
 public:
 	Matrix();
-	Matrix(int size, vector<string> labels);
-	Matrix(int size, vector<T> values, vector<string> labels);
-	Matrix(int size, T value, vector<string> labels);
+	Matrix(vector<string> labels);
+	Matrix(vector<T> values, vector<string> labels);
+	Matrix(T value, vector<string> labels);
 	
-	void Assign(int size, vector<string> labels);
-	void Assign(int size, vector<T> values, vector<string> labels);
-	void Assign(int size, T value, vector<string> labels);
+	void Assign(vector<string> labels);
+	void Assign(vector<T> values, vector<string> labels);
+	void Assign(T value, vector<string> labels);
 	
 	T& operator[](string label);
 	T& operator[](int index);
 	Matrix<T>& operator=(const Matrix<T>& matrix);
 	
 private:
-	int size;
 	vector<string> labels;
 	vector<T> values;
 
@@ -46,43 +45,43 @@ Matrix<T>::Matrix()
 
 }
 template<typename T>
-Matrix<T>::Matrix(int size, vector<string> labels)
+Matrix<T>::Matrix(vector<string> labels)
 {
-	Assign(size, labels);
+	Assign(labels);
 }
 template<typename T>
-Matrix<T>::Matrix(int size, vector<T> values, vector<string> labels)
+Matrix<T>::Matrix(vector<T> values, vector<string> labels)
 {
-	Assign(size, values, labels);
+	Assign(values, labels);
 }
 template<typename T>
-Matrix<T>::Matrix(int size, T value, vector<string> labels)
+Matrix<T>::Matrix(T value, vector<string> labels)
 {
-	Assign(size, value, labels);
+	Assign(value, labels);
 }
 
 template<typename T>
-void Matrix<T>::Assign(int size, vector<string> labels)
+void Matrix<T>::Assign(vector<string> labels)
 {
-	Allocate(size);
+	Allocate((int)labels.size());
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < (int)labels.size(); i++)
 		this->labels[i] = labels[i];
 }
 template<typename T>
-void Matrix<T>::Assign(int size, vector<T> values, vector<string> labels)
+void Matrix<T>::Assign(vector<T> values, vector<string> labels)
 {
-	Assign(size, labels);
+	Assign(labels);
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < (int)values.size(); i++)
 		this->values[i] = values[i];
 }
 template<typename T>
-void Matrix<T>::Assign(int size, T value, vector<string> labels)
+void Matrix<T>::Assign(T value, vector<string> labels)
 {
-	Assign(size, labels);
+	Assign(labels);
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < (int)labels.size(); i++)
 		this->values[i] = value;
 }
 
@@ -94,7 +93,7 @@ T& Matrix<T>::operator[] (string label)
 template<typename T>
 T& Matrix<T>::operator[] (int index)
 {
-	if (index >= 0 && index < size)
+	if (index >= 0 && index < (int)values.size())
 		return values[index];
 	else
 		throw;
@@ -102,15 +101,11 @@ T& Matrix<T>::operator[] (int index)
 template<typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T>& matrix)
 {
-	size = matrix.size;
+	Allocate((int)matrix.labels.size());
 
-	labels = vector<string>(size);
-	values = vector<T>(size);
-
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < (int)labels.size(); i++)
 	{
 		labels[i] = matrix.labels[i];
-
 		values[i] = matrix.values[i];
 	}
 
@@ -120,7 +115,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& matrix)
 template<typename T>
 int Matrix<T>::GetIndexOfLabel(string label)
 {
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < (int)labels.size(); i++)
 		if (labels[i] == label)
 			return i;
 
@@ -132,8 +127,6 @@ void Matrix<T>::Allocate(int size)
 {
 	values = vector<T>(size);
 	labels = vector<string>(size);
-	
-	this->size = size;
 }
 
 #endif
