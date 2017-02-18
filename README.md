@@ -136,4 +136,4 @@ int main()
 	return 0;
 }
 ```
-Produces a 1-dimensional `Matrix` to rank types of shirts, a 2-dimensional `Matrix` to rank shirts-pants combinations, and a 3-dimensional `Matrix` to rank shirts-pants-socks combinations. Then copies the shirt-pants-socks combination `Matrix` and changes a few preferences. The 2-dimensional `Matrix` is declared conventionally without the macro.
+Produces a 1-dimensional `Matrix` to rank types of shirts, a 2-dimensional `Matrix` to rank shirts-pants combinations, and a 3-dimensional `Matrix` to rank shirts-pants-socks combinations. Then, the shirt-pants-socks combination `Matrix` is copied and a few preferences are changed. (The 2-dimensional `Matrix` is declared conventionally without the macro.)
