@@ -36,7 +36,7 @@ void Assign(int size, vector<T> values, vector<string> labels);
 void Assign(int size, T * values, char ** labels);
   
 void Assign(int size, T value, vector<string> labels);
-void Assign(int size, T & value, char ** labels);
+void Assign(int size, T value, char ** labels);
 ```
 `Assign` methods provide the same functions as the constructors to allow alteration of the `Matrix` without declaring a new instance. Each time an `Assign` method is called, all the data in a `Matrix` will be deleted and new space will be allocated.
 
@@ -67,7 +67,7 @@ A deconstructor is only needed for the pointer to a pointer of characters implem
 
 ### Typedefs
 ```
-typedef Matrix<double>   Matrix1D;
+typedef Matrix<double> Matrix1D;
 typedef Matrix<Matrix1D> Matrix2D;
 typedef Matrix<Matrix2D> Matrix3D;
 ```
