@@ -89,10 +89,6 @@ For additional convenience, three macros are provided. Since the `Matrix` class 
 ```C++
 #include "Matrices-StringVector.h"
 
-#define TYPES_OF_SHIRTS 5
-#define TYPES_OF_PANTS  4
-#define TYPES_OF_SOCKS  3
-
 int main()
 {
 	vector<string> shirts = { "T-Shirt", "Sweater", "Sweatshirt", "Coat", "Hoodie" };
